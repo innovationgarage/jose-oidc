@@ -1,6 +1,10 @@
 import requests
 import jose.jws
 import json
+try:
+    import flask
+except:
+    pass
 
 def verify(token):
     """Verifies a JWS token, returning the parsed token if the token has a
@@ -22,3 +26,14 @@ def verify(token):
     else:
         return verified_token_data
     return None
+
+def verify_flask_request_token():
+    """Extracts a Bearer authentication token from the current flask
+    request and verifies it using verify(). Returns the parsed token
+    or None."""
+    
+    header = flask.request.headers.get('Authorization')
+    if header is None: return None
+    if not header.startswith("Bearer "): return None
+    token = header[len("Bearer "):]
+    return verify(token)
